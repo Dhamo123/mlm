@@ -161,7 +161,7 @@ module.exports = function(model,config){
 						config: config,
 						mlm:mlmDetail,
 						mlm_user:mlm_user,
-						alias:'mlm',
+						alias:'customer',
 						subAlias:'add',
 					});
 				}else{
