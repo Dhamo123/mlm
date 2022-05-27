@@ -34,18 +34,12 @@ module.exports = function(model,config){
 	      	],"is_deleted":"0"};
 	    }
 	    
-	    
 	    var mlmCount = await model.MLM.count({where:query});
 	    var mlm = await model.MLM.findAll({where:query, order:[['id','desc']], offset:start, limit:length, raw:true});
-
-	    console.log("mlm: ", mlm);
-	    for (var i = 0; i < mlm.length; i++) {
-
+		
+		for (var i = 0; i < mlm.length; i++) {
 			mlm[i].indexno = i + 1;
-
-	    	mlm[i].editDel =  '<a style="margin-left:5px; font-size: 15px;margin-bottom:5px" href="/edit/' + mlm[i].id + '" class="btn btn-primary btn-sm" title="Edit"><i class="glyphicon glyphicon-edit"></i></a><a style="margin-left:5px; font-size: 15px;" href="/delete/' + mlm[i].id + '" class="btn btn-primary btn-sm"  onClick="return confirm(\'Are you sure you want to delete this customer?\')" title="delete"><i class="glyphicon glyphicon-trash"></i></a>';
-	    	
-	    	
+			mlm[i].editDel =  '<a style="margin-left:5px; font-size: 15px;margin-bottom:5px" href="/edit/' + mlm[i].id + '" class="btn btn-primary btn-sm" title="Edit"><i class="glyphicon glyphicon-edit"></i></a><a style="margin-left:5px; font-size: 15px;" href="/delete/' + mlm[i].id + '" class="btn btn-primary btn-sm"  onClick="return confirm(\'Are you sure you want to delete this customer?\')" title="delete"><i class="glyphicon glyphicon-trash"></i></a>';
 	    }
 
 	    var obj = {
@@ -62,7 +56,6 @@ module.exports = function(model,config){
 
 	module.add = async function(request, response){
 		var mlm_user = await model.MLM.findAll({where:{"is_deleted":"0"}, order:[['id','desc']], raw:true});
-		console.log("process.env.loyalty_point=",config.loyalty_point)
 		response.render('backend/mlm/add', {
 			title: 'New customer',
 			error: request.flash("error"),
@@ -105,17 +98,15 @@ module.exports = function(model,config){
 			response.redirect('/');
 		}
 	};
+
+	//////////////////mlm chaeck and add////////////////////////
 	module.mlm_cycle = async function(id,loyalty_point){
 		try{
 		var mlmData = await model.MLM.findByPk(id);
-		console.log("mlmData==",mlmData)
 		if(mlmData != null){
 
 			let point = parseInt(parseInt(mlmData.dataValues.total_loyalty_point) + parseInt(loyalty_point));
 			let no_of_descendents = parseInt(parseInt(mlmData.dataValues.no_of_descendents) + parseInt(1));
-			console.log("mlmData.total_loyalty_point==",mlmData.dataValues.total_loyalty_point);
-			console.log("loyalty_point==",loyalty_point);
-			console.log("point==",point);
 			await mlmData.update({total_loyalty_point:point,no_of_descendents:no_of_descendents});
 			await module.mlm_cycle(mlmData.mlmid,loyalty_point);
 			loyalty_point = loyalty_point;
@@ -212,7 +203,7 @@ module.exports = function(model,config){
 			response.redirect('/');
 		}
 	};
-
+	///////////////////////////////Soft Delete///////////////////////////////////
 	module.delete = async function(request, response){
 		var mlmId = request.params.id;
 		try{
