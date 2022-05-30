@@ -117,6 +117,22 @@ module.exports = function(model,config){
 			console.log("err========",err)
 		}
 	};
+	module.delete_mlm_cycle = async function(id){
+		try{
+		var mlmData = await model.MLM.findByPk(id);
+		if(mlmData != null){
+
+			let no_of_descendents = parseInt(parseInt(mlmData.dataValues.no_of_descendents) - parseInt(1));
+			await mlmData.update({no_of_descendents:no_of_descendents});
+			await module.mlm_cycle(mlmData.mlmid);
+			id = id;
+		}
+		
+		return id;
+		}catch(err){
+			console.log("err========",err)
+		}
+	};
 	module.checkDuplicate = async function(request, response){
 
 		var email = request.body.email;
@@ -211,9 +227,10 @@ module.exports = function(model,config){
 			if(mlmData){
 				var inputData = {
 					is_deleted : "1",
-					status : "inactive"
+					
 				};
 				var update_data = await mlmData.update(inputData);
+				await module.delete_mlm_cycle(mlmData.mlmid);
 				request.flash('success',"customer delete successfully.");
 				response.redirect('/');
 			}else{

@@ -38,7 +38,7 @@
               <div class="form-group">
                 <label for="title" class="col-md-3 control-label">Language</label>
                 <div class="col-md-9 inputField">
-                 <select class="form-control" name="mlmid" id="mlmid">
+                 <select class="form-control" name="mlmid" id="mlmid" disabled>
                   <option value="0">Select Customer</option>
                     {% for data in mlm_user%}
                       <option value="{{data.id}}" {% if mlm.id == data.id %}selected{%endif%}>{{data.name}}</option>
